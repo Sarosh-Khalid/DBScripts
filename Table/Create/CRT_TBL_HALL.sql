@@ -1,0 +1,53 @@
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_HALL_MANAGER]') AND parent_object_id = OBJECT_ID(N'[dbo].[HALL]'))
+ALTER TABLE [dbo].[HALL] DROP CONSTRAINT [FK_HALL_MANAGER]
+GO
+
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[HALL]') AND type in (N'U'))
+DROP TABLE [dbo].[HALL]
+GO
+
+BEGIN TRANSACTION
+SET QUOTED_IDENTIFIER ON
+SET ARITHABORT ON
+SET NUMERIC_ROUNDABORT OFF
+SET CONCAT_NULL_YIELDS_NULL ON
+SET ANSI_NULLS ON
+SET ANSI_PADDING ON
+SET ANSI_WARNINGS ON
+COMMIT
+BEGIN TRANSACTION
+GO
+
+
+CREATE TABLE [dbo].[HALL](
+	[hall_sk_seq] [int] IDENTITY(1,1) NOT NULL,
+	[hall_manager_sk_seq] INT NOT NULL,
+	[hall_name] [nvarchar](50) NOT NULL,
+	[hall_address] [nvarchar](50) NOT NULL,
+	[hall_owner] [nvarchar](50) NOT NULL,
+	[hall_size] [nvarchar](50) NOT NULL,
+	[seating_capacity] [int] NOT NULL,
+	[state] [nvarchar](50) NOT NULL,
+	[city] [nvarchar](50) NULL,
+	[area] [nvarchar](50) NULL,
+) ON [PRIMARY]
+
+ALTER TABLE dbo.HALL ADD CONSTRAINT
+	PK_hall_sk_seq PRIMARY KEY CLUSTERED 
+	(
+	hall_sk_seq
+	) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+
+GO
+
+
+ALTER TABLE [dbo].[HALL]  WITH NOCHECK ADD  CONSTRAINT [FK_HALL_MANAGER] FOREIGN KEY([hall_manager_sk_seq])
+	REFERENCES [dbo].[HALL_MANAGER] ([hall_manager_sk_seq])
+GO
+
+ALTER TABLE dbo.HALL SET (LOCK_ESCALATION = TABLE)
+GO
+COMMIT
+
+
